@@ -1,0 +1,42 @@
+open the terminal at the folder containing above files , make sure you have installed llvm and added to path
+
+1) Compile the LLVM pass to a shared object file
+    clang++ -fno-rtti -shared -o insert-checkpoint.so insert-checkpoint.cpp $(llvm-config --cxxflags --ldflags --libs core)
+    clang++ -fPIC -shared -o insert-checkpoint.so insert-checkpoint.cpp $(llvm-config --cxxflags --ldflags --libs core)
+
+2)Compile the C++ application to LLVM IR/ ll
+
+     clang -Ofast -S -emit-llvm many_fun.cpp -o many_fun.ll
+     clang -Os -S -emit-llvm many_fun.cpp -o many_fun.ll
+     clang -O0 -S -emit-llvm many_fun.cpp -o many_fun.ll
+     clang -O1 -S -emit-llvm many_fun.cpp -o many_fun.ll
+     clang -O2 -S -emit-llvm many_fun.cpp -o many_fun.ll
+     clang -O3 -S -emit-llvm many_fun.cpp -o many_fun.ll
+     clang -O4 -S -emit-llvm many_fun.cpp -o many_fun.ll
+
+     clang++ -S -emit-llvm -c many_fun.cpp -o many_fun.bc
+     clang++ -emit-llvm -c many_fun.cpp -o many_fun.bc
+     clang++ -S -emit-llvm -c many_fun.cpp -o many_fun.ll
+
+     clang++ output.ll -o output
+
+     clang++ -c perform_checkpoint.cpp -o perform_checkpoint.o
+
+     clang++ output.ll perform_checkpoint.o -o output
+
+
+3)Run the LLVM pass on the bitcode , 'a' might not work there might be issue with legacy pass manager in some systems for that try 'b' and it also fails then try 'c' or'd' or 'e'
+    a) opt -load=./insert-checkpoint.so -insert-checkpoint many_fun.bc
+    b) opt -S -enable-new-pm=0 -load=./insert-checkpoint.so -insert-checkpoint many_fun.ll -o output.ll
+    c) opt -enable-new-pm=0 -load=./insert-checkpoint.so -insert-checkpoint many_fun.ll
+    d) opt -bugpoint-enable-legacy-pm -load=./insert-checkpoint.so -insert-checkpoint many_fun.bc -o output.ll
+    e) opt -bugpoint-enable-legacy-pm -load ./insert-checkpoint.so -insert-checkpoint < many_fun.ll
+    f) opt -S -bugpoint-enable-legacy-pm -load ./insert-checkpoint.so -insert-checkpoint < many_fun.ll > output.ll
+    g) opt -bugpoint-enable-legacy-pm -load ./insert-checkpoint.so -insert-checkpoint many_fun.bc -o output.bc
+    h) opt -bugpoint-enable-legacy-pm -load ./insert-checkpoint.so -insert-checkpoint many_fun.ll -o many_fun_with_check.ll
+
+   opt --print-passes | grep printInst
+
+
+   llvm-dis: This is the LLVM disassembler. It takes a bitcode file as input and outputs the llvm assembly.
+$ llvm-dis add.bc –o add.ll
