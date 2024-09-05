@@ -1,0 +1,12 @@
+The assignment for your group is the following:
+
+Design an LLVM pass to take a C++ application as input and place a checkpoint after every function 
+so that the system becomes persistent. Also, print the ID of the desired basic block. 
+You can use numbers to represent the basic block ID.
+
+You may refer to the following paper if needed. 
+
+Jungi Jeong, Jianping Zeng, and Changhee Jung. 2022. Capri: Compiler and Architecture Support for 
+Whole-System Persistence. In Proceedings of the 31st International Symposium on High-Performance Parallel and 
+Distributed Computing (HPDC '22). Association for Computing Machinery, New York, NY, USA, 71–83. 
+https://doi.org/10.1145/3502181.3531474. 
